@@ -14,6 +14,8 @@ public class EpisodesListPresenter {
     private final List<Episode> episodes = new ArrayList<>();
     // view
     private EpisodesListView view;
+    // navigation
+    private EpisodeToCharactersNavigation navigateToCharacters;
 
     private int currPage = 0;
     private boolean lastPageReached = false;
@@ -21,6 +23,10 @@ public class EpisodesListPresenter {
 
     public void setView(EpisodesListView view) {
         this.view = view;
+    }
+
+    public void setNavigationToCharacters(EpisodeToCharactersNavigation navToCharacters) {
+        this.navigateToCharacters = navToCharacters;
     }
 
     public void onLoad() {
@@ -93,15 +99,53 @@ public class EpisodesListPresenter {
         return lastPageReached;
     }
 
-    public void onEpisodeClicked() {
+    public void onEpisodeClicked(int index) {
+        if (navigateToCharacters == null) {
+            throw new IllegalStateException("It's required to EpisodeToCharactersNavigation handler.");
+        }
+        if (index < 0 || index >= episodes.size()) {
+            view.showSoftError("Can't show episode detail at the moment. Please try again later.");
+            return;
+        }
+        navigateToCharacters.setEpisodeTitle(episodes.get(index).getName());
+        navigateToCharacters.setCharacterIds(parseCharacterIds(episodes.get(index).getCharacters()));
+        navigateToCharacters.execute();
+    }
 
+    private long[] parseCharacterIds(String[] characters) {
+        List<Long> idsList = new ArrayList<>();
+        String characterSubStr = "character/";
+        for (String character : characters) {
+            if (character == null) {
+                continue;
+            }
+            String idSubstring = null;
+            try {
+                idSubstring = character.substring(character.lastIndexOf(characterSubStr) + characterSubStr.length());
+            } catch (StringIndexOutOfBoundsException e) {}
+            System.out.println("idSubstring: " + idSubstring);
+            Long id = null;
+            if (idSubstring != null && !idSubstring.isEmpty()) {
+                try {
+                    id = Long.parseLong(idSubstring);
+                } catch (NumberFormatException e) {}
+            }
+            if (id != null) {
+                idsList.add(id);
+            }
+        }
+        long[] ids = new long[idsList.size()];
+        for (int i = 0; i < idsList.size(); i++) {
+            Long id = idsList.get(i);
+            ids[i] = id;
+        }
+        return ids;
     }
 
     public void onLoadEpisodeAt(int index, EpisodeView view) {
         if (index < 0 || index >= episodes.size()) {
             return;
         }
-
         if (view != null) {
             view.setEpisode(episodes.get(index).getEpisode());
             view.setTitle(episodes.get(index).getName());

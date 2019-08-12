@@ -20,6 +20,7 @@ public abstract class GetRequest<T> {
 
     public T execute() throws IOException {
         URL url = new URL(this.url);
+        System.out.println("url: " + url.toString());
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
 
         // optional default is GET

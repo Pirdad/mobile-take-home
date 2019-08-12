@@ -71,6 +71,7 @@ public class EpisodesRequest extends GetRequest<List<Episode>> {
         for (int i = 0; i < charactersJson.length(); i++) {
             try {
                 String character = charactersJson.getString(i);
+                characters[i] = character;
             } catch (JSONException e) {}
         }
         return characters;
