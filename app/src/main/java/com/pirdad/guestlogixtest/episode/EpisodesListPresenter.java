@@ -8,31 +8,74 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EpisodesPresenter {
+public class EpisodesListPresenter {
 
     // model
     private final List<Episode> episodes = new ArrayList<>();
     // view
-    private EpisodesView view;
+    private EpisodesListView view;
 
-    public void setView(EpisodesView view) {
+    private int currPage = 0;
+    private boolean lastPageReached = false;
+    private boolean isLoading = false;
+
+    public void setView(EpisodesListView view) {
         this.view = view;
     }
 
     public void onLoad() {
+        lastPageReached = false;
+        currPage = 1;
+        isLoading = true;
         new Thread(runLoad).start();
+    }
+
+    public void onLoadMore() {
+        if (lastPageReached || isLoading) {
+            return;
+        }
+        if (episodes.isEmpty()) {
+            onLoad();
+            return;
+        }
+        isLoading = true;
+        new Thread(runLoadMore).start();
     }
 
     private final Runnable runLoad = new Runnable() {
         @Override
         public void run() {
             try {
-                List<Episode> episodes = new EpisodesRequest(1).execute();
-                synchronized (EpisodesPresenter.this.episodes) {
-                    EpisodesPresenter.this.episodes.clear();
-                    EpisodesPresenter.this.episodes.addAll(episodes);
+                List<Episode> episodes = new EpisodesRequest(currPage).execute();
+                synchronized (EpisodesListPresenter.this.episodes) {
+                    EpisodesListPresenter.this.episodes.clear();
+                    EpisodesListPresenter.this.episodes.addAll(episodes);
                     if (view != null) {
                         view.onDataLoaded();
+                    }
+                    isLoading = false;
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    };
+
+    private final Runnable runLoadMore = new Runnable() {
+        @Override
+        public void run() {
+            try {
+                List<Episode> episodes = new EpisodesRequest(currPage+1).execute();
+                synchronized (EpisodesListPresenter.this.episodes) {
+                    EpisodesListPresenter.this.episodes.addAll(episodes);
+                    if (view != null) {
+                        view.onDataLoaded();
+                    }
+                    isLoading = false;
+                    if (episodes.isEmpty()) {
+                        lastPageReached = true;
+                    } else {
+                        currPage++;
                     }
                 }
             } catch (IOException e) {
@@ -41,11 +84,13 @@ public class EpisodesPresenter {
         }
     };
 
-    private Episode getTestEpisode(String title, String airdate) {
-        Episode ep = new Episode();
-        ep.setAirDate(airdate);
-        ep.setName(title);
-        return ep;
+
+    public boolean isLoading() {
+        return isLoading;
+    }
+
+    public boolean isLastPageReached() {
+        return lastPageReached;
     }
 
     public void onEpisodeClicked() {

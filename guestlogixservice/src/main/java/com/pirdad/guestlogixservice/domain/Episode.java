@@ -1,4 +1,4 @@
-package com.pirdad.guestlogixtest.models;
+package com.pirdad.guestlogixservice.domain;
 
 public class Episode {
 

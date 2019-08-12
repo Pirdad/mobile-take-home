@@ -14,15 +14,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.pirdad.guestlogixtest.episode.EpisodeView;
-import com.pirdad.guestlogixtest.episode.EpisodesPresenter;
-import com.pirdad.guestlogixtest.episode.EpisodesView;
+import com.pirdad.guestlogixtest.episode.EpisodesListPresenter;
+import com.pirdad.guestlogixtest.episode.EpisodesListView;
 import com.pirdad.guestlogixtest.helpers.ListSpacingDecoration;
+import com.pirdad.guestlogixtest.helpers.PaginationScrollListener;
 
-public class EpisodesActivity extends Activity implements EpisodesView {
+public class EpisodesListActivity extends Activity implements EpisodesListView {
 
     private RecyclerView recycler;
-    private EpisodesPresenter presenter;
+    private EpisodesListPresenter presenter;
     private Adapter adapter;
+    private LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,15 +50,16 @@ public class EpisodesActivity extends Activity implements EpisodesView {
     }
 
     private void init() {
-        presenter = new EpisodesPresenter();
+        presenter = new EpisodesListPresenter();
         presenter.setView(this);
 
         adapter = new Adapter();
 
         recycler = findViewById(R.id.recycler);
-        recycler.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+        recycler.setLayoutManager(layoutManager);
         recycler.addItemDecoration(new ListSpacingDecoration(this, R.dimen.StandardMediumMargin));
         recycler.setAdapter(adapter);
+        recycler.addOnScrollListener(paginationScrollListener);
     }
 
     @Override
@@ -70,6 +73,25 @@ public class EpisodesActivity extends Activity implements EpisodesView {
             }
         });
     }
+
+    private PaginationScrollListener paginationScrollListener = new PaginationScrollListener(layoutManager) {
+        @Override
+        protected void loadMoreItems() {
+            if (presenter != null) {
+                presenter.onLoadMore();
+            }
+        }
+
+        @Override
+        public boolean isLastPage() {
+            return presenter != null && presenter.isLastPageReached();
+        }
+
+        @Override
+        public boolean isLoading() {
+            return presenter != null && presenter.isLoading();
+        }
+    };
 
     private class Adapter extends RecyclerView.Adapter<EpisodeVH> {
 

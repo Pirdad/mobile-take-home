@@ -1,6 +1,6 @@
 package com.pirdad.guestlogixtest.episode;
 
-public interface EpisodesView {
+public interface EpisodesListView {
 
     void onDataLoaded();
 }

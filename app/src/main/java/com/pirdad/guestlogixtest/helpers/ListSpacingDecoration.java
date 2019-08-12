@@ -1,4 +1,4 @@
-package com.pirdad.guestlogixtest.utils;
+package com.pirdad.guestlogixtest.helpers;
 
 import android.content.Context;
 import android.graphics.Rect;
