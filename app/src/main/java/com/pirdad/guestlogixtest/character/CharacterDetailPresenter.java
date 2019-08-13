@@ -9,7 +9,8 @@ public class CharacterDetailPresenter {
     // view
     private CharacterView view;
     // model
-    private Repository<Character> repository;
+    private CharacterRepository repository;
+    private Character character;
 
     private long id;
     private boolean loading;
@@ -18,7 +19,7 @@ public class CharacterDetailPresenter {
         this.view = view;
     }
 
-    public void setRepository(Repository<Character> repository) {
+    public void setRepository(CharacterRepository repository) {
         this.repository = repository;
     }
 
@@ -42,6 +43,7 @@ public class CharacterDetailPresenter {
         public void run() {
             Character character = repository.get(id);
             if (view != null && character != null) {
+                CharacterDetailPresenter.this.character = character;
                 updateView(character);
             } else if (view != null) {
                 view.showSoftError("Could not load this character at the moment. Try again later.");
@@ -60,6 +62,12 @@ public class CharacterDetailPresenter {
         view.setType(getValueOrUnknown(character.getType()));
         view.setOrigin(getLocationOrUnknown(character.getOrigin()));
         view.setLocation(getLocationOrUnknown(character.getLocation()));
+
+        if (character.getStatus().equalsIgnoreCase("alive")) {
+            view.showKillButton();
+        } else {
+            view.hideKillButton();
+        }
     }
 
     private String getLocationOrUnknown(Location location) {
@@ -68,5 +76,18 @@ public class CharacterDetailPresenter {
 
     private String getValueOrUnknown(String value) {
         return value == null || value.isEmpty() ? "Unknown" : value;
+    }
+
+    public void onKillClicked() {
+        if (repository == null) {
+            throw new IllegalStateException("Repository must be set CharacterDetailPresenter.");
+        }
+        character.setStatus("Dead");
+        repository.update(character);
+        repository.addToKillList(character);
+        if (view != null) {
+            view.setStatus(character.getStatus());
+            view.hideKillButton();
+        }
     }
 }

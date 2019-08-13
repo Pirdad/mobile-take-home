@@ -21,4 +21,8 @@ public interface CharacterView {
     void showSoftError(String message);
 
     void dismiss();
+
+    void showKillButton();
+
+    void hideKillButton();
 }

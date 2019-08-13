@@ -4,22 +4,17 @@ import com.pirdad.guestlogixservice.CharactersRequest;
 import com.pirdad.guestlogixservice.domain.Character;
 import com.pirdad.guestlogixservice.domain.Episode;
 import com.pirdad.guestlogixtest.Repository;
-import com.pirdad.guestlogixtest.episode.EpisodesListPresenter;
 
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
 
 public class CharactersListPresenter {
-
-    private static final String SORT_KEY_ALIVE = "alive";
-    private static final String SORT_KEY_DEAD = "dead";
-    private static final String SORT_KEY_UNKNOWN = "unknown";
 
     public static final int ITEM_TYPE_HEADING = 0;
     public static final int ITEM_TYPE_CHARACTER = 1;
@@ -69,6 +64,24 @@ public class CharactersListPresenter {
         new Thread(runLoad).start();
     }
 
+    public void refresh() {
+        if (characterRepository == null) {
+            throw new IllegalStateException("Character Repository must be set for CharactersListPresenter.");
+        }
+        if (isLoading) {
+            return;
+        }
+        Collection<Character> characters = characterRepository.getAll();
+        if (characters != null && !characters.isEmpty()) {
+            this.characters.clear();
+            this.characters.addAll(characters);
+            sortAndAddHeaders(this.characters);
+            if (view != null) {
+                view.onDataLoaded();
+            }
+        }
+    }
+
     private final Runnable runLoad = new Runnable() {
         @Override
         public void run() {
@@ -80,7 +93,7 @@ public class CharactersListPresenter {
                 synchronized (CharactersListPresenter.this.characters) {
                     CharactersListPresenter.this.characters.clear();
                     CharactersListPresenter.this.characters.addAll(characters);
-                    sortAndHeaders(CharactersListPresenter.this.characters);
+                    sortAndAddHeaders(CharactersListPresenter.this.characters);
                     if (view != null) {
                         view.onDataLoaded();
                         view.dismissLoading();
@@ -95,7 +108,7 @@ public class CharactersListPresenter {
         }
     };
 
-    private void sortAndHeaders(List<Object> characters) {
+    private void sortAndAddHeaders(List<Object> characters) {
         characters.add(6, "Unknown");
         characters.add("Alive");
         characters.add(0, "Dead");

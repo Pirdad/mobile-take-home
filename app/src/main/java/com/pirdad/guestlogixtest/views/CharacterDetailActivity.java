@@ -3,6 +3,8 @@ package com.pirdad.guestlogixtest.views;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -10,10 +12,11 @@ import android.widget.Toast;
 import com.pirdad.guestlogixservice.domain.Character;
 import com.pirdad.guestlogixtest.R;
 import com.pirdad.guestlogixtest.character.CharacterDetailPresenter;
+import com.pirdad.guestlogixtest.character.CharacterRepository;
 import com.pirdad.guestlogixtest.character.CharacterView;
 import com.pirdad.guestlogixtest.helpers.ImageLoader;
 
-public class CharacterDetailActivity extends BaseActivity implements CharacterView {
+public class CharacterDetailActivity extends BaseActivity implements CharacterView, View.OnClickListener {
     public static final String KEY_ID = "ID";
 
     private CharacterDetailPresenter presenter;
@@ -25,6 +28,7 @@ public class CharacterDetailActivity extends BaseActivity implements CharacterVi
     private TextView species;
     private TextView origin;
     private TextView location;
+    private Button kill;
 
     private String originText;
     private String speciesText;
@@ -40,7 +44,7 @@ public class CharacterDetailActivity extends BaseActivity implements CharacterVi
         presenter = new CharacterDetailPresenter();
         presenter.setId(loadId());
         presenter.setView(this);
-        presenter.setRepository(getRepositoryProvider().getRepository(Character.class));
+        presenter.setRepository((CharacterRepository) getRepositoryProvider().getRepository(Character.class));
 
         image = findViewById(R.id.image);
         name = findViewById(R.id.name);
@@ -50,6 +54,9 @@ public class CharacterDetailActivity extends BaseActivity implements CharacterVi
         species = findViewById(R.id.species);
         origin = findViewById(R.id.origin);
         location = findViewById(R.id.location);
+        kill = findViewById(R.id.kill);
+
+        kill.setOnClickListener(this);
     }
 
     private long loadId() {
@@ -190,5 +197,34 @@ public class CharacterDetailActivity extends BaseActivity implements CharacterVi
                 finish();
             }
         });
+    }
+
+    @Override
+    public void showKillButton() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                CharacterDetailActivity.this.kill.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    @Override
+    public void hideKillButton() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                CharacterDetailActivity.this.kill.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v == kill) {
+            if (presenter != null) {
+                presenter.onKillClicked();
+            }
+        }
     }
 }

@@ -12,7 +12,7 @@ import java.util.Map;
 
 public class DefaultRepositoryProvider implements RepositoryProvider {
 
-    private final Map<Class, Repository> repositories;
+    private final  Map<Class, Repository> repositories;
 
     public DefaultRepositoryProvider() {
         repositories = new HashMap<>();
@@ -24,9 +24,9 @@ public class DefaultRepositoryProvider implements RepositoryProvider {
         repositories.put(Episode.class, new DefaultEpisodeRepository());
     }
 
-    @SuppressWarnings("unchecked")
     @Override
-    public <T> Repository<T> getRepository(Class<T> cls) {
+    @SuppressWarnings("unchecked")
+    public <O> Repository<O> getRepository(Class<O> cls) {
         return repositories.get(cls);
     }
 }

@@ -71,6 +71,14 @@ public class CharactersListActivity extends BaseActivity implements CharactersLi
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        if (presenter != null) {
+            presenter.refresh();
+        }
+    }
+
+    @Override
     protected void onDestroy() {
         if (presenter != null) {
             presenter.setView(null);
@@ -230,6 +238,12 @@ public class CharactersListActivity extends BaseActivity implements CharactersLi
 
         @Override
         public void dismiss() { }
+
+        @Override
+        public void showKillButton() { }
+
+        @Override
+        public void hideKillButton() { }
 
         @Override
         public void onClick(View v) {

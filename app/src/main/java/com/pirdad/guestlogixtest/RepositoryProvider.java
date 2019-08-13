@@ -2,5 +2,5 @@ package com.pirdad.guestlogixtest;
 
 public interface RepositoryProvider {
 
-    <T> Repository<T> getRepository(Class<T> cls);
+    <O> Repository<O> getRepository(Class<O> cls);
 }
