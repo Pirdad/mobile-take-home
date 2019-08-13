@@ -1,13 +1,15 @@
 package com.pirdad.guestlogixtest.views;
 
 import com.pirdad.guestlogixservice.domain.Character;
+import com.pirdad.guestlogixservice.domain.Episode;
 import com.pirdad.guestlogixtest.R;
-import android.app.Activity;
+
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,22 +17,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.pirdad.guestlogixtest.TakeHomeTestApplication;
 import com.pirdad.guestlogixtest.character.CharacterView;
 import com.pirdad.guestlogixtest.character.CharactersListPresenter;
 import com.pirdad.guestlogixtest.character.CharactersListView;
+import com.pirdad.guestlogixtest.character.HeaderView;
 import com.pirdad.guestlogixtest.helpers.ImageLoader;
 import com.pirdad.guestlogixtest.helpers.ListSpacingDecoration;
 import com.pirdad.guestlogixtest.navigation.CharacterDetailNavigationHandler;
 
 public class CharactersListActivity extends BaseActivity implements CharactersListView {
 
-    public static final String KEY_TITLE = "TITLE";
-    public static final String KEY_CHARACTER_IDS = "CHARACTER_IDS";
+    public static final String KEY_EPISODE_ID = "KEY_EPISODE_ID";
 
     private CharactersListPresenter presenter;
     private RecyclerView recycler;
-    private TextView title;
+    private Toolbar toolbar;
+    private View loader;
     private Adapter adapter;
     private LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
@@ -44,10 +46,10 @@ public class CharactersListActivity extends BaseActivity implements CharactersLi
     private void init() {
         presenter = new CharactersListPresenter();
         presenter.setView(this);
-        presenter.setRepository(getRepositoryProvider().getRepository(Character.class));
+        presenter.setCharacterRepository(getRepositoryProvider().getRepository(Character.class));
+        presenter.setEpisodeRepository(getRepositoryProvider().getRepository(Episode.class));
         presenter.setCharacterToDetailNavigationHandler(new CharacterDetailNavigationHandler(this));
-        presenter.setCharacterIds(loadCharacterIds());
-        presenter.setTitle(loadTitle());
+        presenter.setEpisodeId(loadEpisodeId());
 
         adapter = new Adapter();
 
@@ -56,7 +58,8 @@ public class CharactersListActivity extends BaseActivity implements CharactersLi
         recycler.addItemDecoration(new ListSpacingDecoration(this, R.dimen.StandardMediumMargin));
         recycler.setAdapter(adapter);
 
-        title = findViewById(R.id.title);
+        toolbar = findViewById(R.id.toolbar);
+        loader = findViewById(R.id.loader);
     }
 
     @Override
@@ -75,12 +78,8 @@ public class CharactersListActivity extends BaseActivity implements CharactersLi
         super.onDestroy();
     }
 
-    private String loadTitle() {
-        return getIntent().getStringExtra(KEY_TITLE);
-    }
-
-    private long[] loadCharacterIds() {
-        return getIntent().getLongArrayExtra(KEY_CHARACTER_IDS);
+    private long loadEpisodeId() {
+        return getIntent().getLongExtra(KEY_EPISODE_ID, -1);
     }
 
     @Override
@@ -96,21 +95,72 @@ public class CharactersListActivity extends BaseActivity implements CharactersLi
     }
 
     @Override
-    public void showSoftError(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    public void showSoftError(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(CharactersListActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private class Adapter extends RecyclerView.Adapter<CharacterVH> {
+    @Override
+    public void showLoading() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                loader.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    @Override
+    public void dismissLoading() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                loader.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    @Override
+    public void setTitle(final String title) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                CharactersListActivity.this.toolbar.setTitle(title);
+            }
+        });
+    }
+
+    private class Adapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+        @Override
+        public int getItemViewType(int position) {
+            if (presenter != null) {
+                return presenter.getItemTypeAt(position);
+            }
+            return super.getItemViewType(position);
+        }
+
         @NonNull
         @Override
-        public CharacterVH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-            return new CharacterVH(getLayoutInflater().inflate(R.layout.item_character, parent, false));
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+            if (viewType == CharactersListPresenter.ITEM_TYPE_HEADING) {
+                return new HeaderVH(getLayoutInflater().inflate(R.layout.item_header, parent, false));
+            } else {
+                return new CharacterVH(getLayoutInflater().inflate(R.layout.item_character, parent, false));
+            }
         }
 
         @Override
-        public void onBindViewHolder(@NonNull CharacterVH holder, int position) {
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
             if (presenter != null) {
-                presenter.onLoadCharacterAt(position, holder);
+                if (holder instanceof HeaderVH) {
+                    presenter.onLoadHeaderAt(position, (HeaderView) holder);
+                } else {
+                    presenter.onLoadCharacterAt(position, (CharacterView) holder);
+                }
             }
         }
 
@@ -136,6 +186,7 @@ public class CharactersListActivity extends BaseActivity implements CharactersLi
 
         @Override
         public void setPicture(String imageUrl) {
+            image.setImageBitmap(null);
             ImageLoader.getInstance().loadImage(image, imageUrl);
         }
 
@@ -185,6 +236,21 @@ public class CharactersListActivity extends BaseActivity implements CharactersLi
             if (v == itemView && presenter != null) {
                 presenter.onCharacterClicked(getAdapterPosition());
             }
+        }
+    }
+
+    private class HeaderVH extends RecyclerView.ViewHolder implements HeaderView {
+
+        private TextView header;
+
+        public HeaderVH(View itemView) {
+            super(itemView);
+            header = itemView.findViewById(R.id.header);
+        }
+
+        @Override
+        public void setHeading(String heading) {
+            header.setText(heading);
         }
     }
 }

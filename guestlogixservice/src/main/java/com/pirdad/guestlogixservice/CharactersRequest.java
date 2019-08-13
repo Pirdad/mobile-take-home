@@ -92,8 +92,8 @@ public class CharactersRequest extends GetRequest<List<Character>> {
             character.setImage(json.getString("image"));
             character.setUrl(json.getString("url"));
             character.setCreated(json.getString("created"));
-            parseLocation(json.getJSONObject("origin"));
-            parseLocation(json.getJSONObject("location"));
+            character.setOrigin(parseLocation(json.getJSONObject("origin")));
+            character.setLocation(parseLocation(json.getJSONObject("location")));
         } catch (JSONException e) {}
         return character;
     }

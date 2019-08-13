@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,10 +29,10 @@ public class ImageLoader {
     }
 
     private LruCache<String, Bitmap> cache;
-    private Set<LruCacheAsyncTask> taskSet;
+    private HashMap<ImageView, LruCacheAsyncTask> taskSet;
 
     private ImageLoader(){
-        taskSet = new HashSet<>();
+        taskSet = new HashMap<>();
         int maxMemory = (int) Runtime.getRuntime().maxMemory();
         int cacheSize = maxMemory / 8;
         cache = new LruCache<String, Bitmap>(cacheSize){
@@ -54,12 +55,17 @@ public class ImageLoader {
 
     public void loadImage(ImageView imageView, String imageUrl) {
         Bitmap bitmap = getBitmapFromMemory(imageUrl);
-        if (bitmap == null) {
+        if (bitmap != null) {
+            imageView.setImageBitmap(bitmap);
+        } else {
+            LruCacheAsyncTask currTask = taskSet.get(imageView);
+            if (currTask != null) {
+                currTask.imageView = null;
+                currTask.cancel(false);
+            }
             LruCacheAsyncTask task = new LruCacheAsyncTask(imageView);
             task.execute(imageUrl);
-            taskSet.add(task);
-        } else {
-            imageView.setImageBitmap(bitmap);
+            taskSet.put(imageView, task);
         }
     }
 
@@ -87,7 +93,9 @@ public class ImageLoader {
             if (imageView != null && bitmap != null) {
                 imageView.setImageBitmap(bitmap);
             }
-            taskSet.remove(this);
+            if (imageView != null) {
+                taskSet.remove(imageView);
+            }
         }
 
         private Bitmap getBitmapFromUrl(String urlPath) {
@@ -96,8 +104,14 @@ public class ImageLoader {
                 URL url = new URL(urlPath);
                 URLConnection conn = url.openConnection();
                 conn.connect();
+                if (isCancelled()) {
+                    return null;
+                }
                 InputStream in;
                 in = conn.getInputStream();
+                if (isCancelled()) {
+                    return null;
+                }
                 bitmap = BitmapFactory.decodeStream(in);
             } catch (IOException e) {
                 e.printStackTrace();
@@ -108,8 +122,8 @@ public class ImageLoader {
 
     public void cancelAllTask() {
         if (taskSet != null) {
-            for (LruCacheAsyncTask task : taskSet) {
-                task.cancel(false);
+            for (ImageView key : taskSet.keySet()) {
+                taskSet.get(key).cancel(false);
             }
             taskSet.clear();
         }

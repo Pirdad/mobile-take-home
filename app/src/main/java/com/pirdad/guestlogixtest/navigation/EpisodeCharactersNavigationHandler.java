@@ -17,13 +17,8 @@ public class EpisodeCharactersNavigationHandler implements EpisodeToCharactersNa
     }
 
     @Override
-    public void setEpisodeTitle(String title) {
-        args.putString(CharactersListActivity.KEY_TITLE, title);
-    }
-
-    @Override
-    public void setCharacterIds(long[] ids) {
-        args.putLongArray(CharactersListActivity.KEY_CHARACTER_IDS, ids);
+    public void setEpisodeId(long id) {
+        args.putLong(CharactersListActivity.KEY_EPISODE_ID, id);
     }
 
     @Override

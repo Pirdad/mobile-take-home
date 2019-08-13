@@ -2,6 +2,7 @@ package com.pirdad.guestlogixtest.views;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -24,6 +25,9 @@ public class CharacterDetailActivity extends BaseActivity implements CharacterVi
     private TextView species;
     private TextView origin;
     private TextView location;
+
+    private String originText;
+    private String speciesText;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -113,9 +117,27 @@ public class CharacterDetailActivity extends BaseActivity implements CharacterVi
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                CharacterDetailActivity.this.speciesText = species;
                 CharacterDetailActivity.this.species.setText(species);
+                updateSubHeading();
             }
         });
+    }
+
+    private void updateSubHeading() {
+        StringBuilder sb = new StringBuilder();
+        boolean validSpecies = !TextUtils.isEmpty(speciesText) && !speciesText.equalsIgnoreCase("unknown");
+        boolean validOrigin = !TextUtils.isEmpty(originText) && !originText.equalsIgnoreCase("unknown");
+        if (validSpecies) {
+            sb.append(speciesText);
+        }
+        if (validSpecies && validOrigin) {
+            sb.append(" from ");
+        }
+        if (validOrigin) {
+            sb.append(originText);
+        }
+        subHeading.setText(sb.toString());
     }
 
     @Override
@@ -133,7 +155,9 @@ public class CharacterDetailActivity extends BaseActivity implements CharacterVi
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
+                CharacterDetailActivity.this.originText = origin;
                 CharacterDetailActivity.this.origin.setText(origin);
+                updateSubHeading();
             }
         });
     }

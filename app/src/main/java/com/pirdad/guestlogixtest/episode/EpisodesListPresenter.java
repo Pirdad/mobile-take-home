@@ -94,11 +94,13 @@ public class EpisodesListPresenter {
             } catch (IOException e) {
                 e.printStackTrace();
                 isLoading = false;
+                String errorMessage = "And error occurred. Pleas try again later.";
                 if (e instanceof UnknownHostException || e instanceof SocketTimeoutException) {
-                    if (view != null) {
-                        view.dismissLoading();
-                        view.showSoftError("Please check your network connection and try again.");
-                    }
+                    errorMessage = "Please check your network connection and try again.";
+                }
+                if (view != null) {
+                    view.dismissLoading();
+                    view.showSoftError(errorMessage);
                 }
             }
         }
@@ -148,39 +150,8 @@ public class EpisodesListPresenter {
             view.showSoftError("Can't show episode detail at the moment. Please try again later.");
             return;
         }
-        navigateToCharacters.setEpisodeTitle(episodes.get(index).getName());
-        navigateToCharacters.setCharacterIds(parseCharacterIds(episodes.get(index).getCharacters()));
+        navigateToCharacters.setEpisodeId(episodes.get(index).getId());
         navigateToCharacters.execute();
-    }
-
-    private long[] parseCharacterIds(String[] characters) {
-        List<Long> idsList = new ArrayList<>();
-        String characterSubStr = "character/";
-        for (String character : characters) {
-            if (character == null) {
-                continue;
-            }
-            String idSubstring = null;
-            try {
-                idSubstring = character.substring(character.lastIndexOf(characterSubStr) + characterSubStr.length());
-            } catch (StringIndexOutOfBoundsException e) {}
-            System.out.println("idSubstring: " + idSubstring);
-            Long id = null;
-            if (idSubstring != null && !idSubstring.isEmpty()) {
-                try {
-                    id = Long.parseLong(idSubstring);
-                } catch (NumberFormatException e) {}
-            }
-            if (id != null) {
-                idsList.add(id);
-            }
-        }
-        long[] ids = new long[idsList.size()];
-        for (int i = 0; i < idsList.size(); i++) {
-            Long id = idsList.get(i);
-            ids[i] = id;
-        }
-        return ids;
     }
 
     public void onLoadEpisodeAt(int index, EpisodeView view) {

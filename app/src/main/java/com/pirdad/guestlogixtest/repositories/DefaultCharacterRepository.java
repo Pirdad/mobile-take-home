@@ -1,15 +1,18 @@
 package com.pirdad.guestlogixtest.repositories;
 
 import com.pirdad.guestlogixservice.domain.Character;
+import com.pirdad.guestlogixservice.domain.Episode;
 import com.pirdad.guestlogixtest.Repository;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 public class DefaultCharacterRepository implements Repository<Character> {
 
-    private final List<Character> characters = new ArrayList<>();
+    private final Collection<Character> characters = new LinkedHashSet<>();
 
     public DefaultCharacterRepository() { }
 
@@ -33,10 +36,10 @@ public class DefaultCharacterRepository implements Repository<Character> {
     @Override
     public void delete(long id) {
         synchronized (characters) {
-            for (int i = 0; i < characters.size(); i++) {
-                Character character = characters.get(i);
-                if (character.getId() == id) {
-                    characters.remove(character);
+            while (characters.iterator().hasNext()) {
+                Character item =  characters.iterator().next();
+                if (item.getId() == id) {
+                    characters.remove(item);
                     return;
                 }
             }
