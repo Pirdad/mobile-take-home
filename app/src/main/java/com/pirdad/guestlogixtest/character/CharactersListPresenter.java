@@ -27,6 +27,7 @@ public class CharactersListPresenter {
     private Repository<Character> characterRepository;
     private Repository<Episode> episodeRepository;
     private final List<Object> characters = new ArrayList<>();
+    private List<Character> loadedCharacters;
 
     private long episodeId;
     private boolean isLoading;
@@ -71,10 +72,9 @@ public class CharactersListPresenter {
         if (isLoading) {
             return;
         }
-        Collection<Character> characters = characterRepository.getAll();
-        if (characters != null && !characters.isEmpty()) {
+        if (loadedCharacters != null && !loadedCharacters.isEmpty()) {
             this.characters.clear();
-            this.characters.addAll(characters);
+            this.characters.addAll(loadedCharacters);
             sortAndAddHeaders(this.characters);
             if (view != null) {
                 view.onDataLoaded();
@@ -88,12 +88,12 @@ public class CharactersListPresenter {
             try {
                 Episode episode = episodeRepository.get(episodeId);
                 setTitle(episode);
-                List<Character> characters = new CharactersRequest(parseCharacterIds(episode.getCharacters())).execute();
-                addCharactersToRepository(characters);
-                synchronized (CharactersListPresenter.this.characters) {
-                    CharactersListPresenter.this.characters.clear();
-                    CharactersListPresenter.this.characters.addAll(characters);
-                    sortAndAddHeaders(CharactersListPresenter.this.characters);
+                loadedCharacters = new CharactersRequest(parseCharacterIds(episode.getCharacters())).execute();
+                addCharactersToRepository(loadedCharacters);
+                synchronized (characters) {
+                    characters.clear();
+                    characters.addAll(loadedCharacters);
+                    sortAndAddHeaders(characters);
                     if (view != null) {
                         view.onDataLoaded();
                         view.dismissLoading();
