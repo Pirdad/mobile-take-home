@@ -1,5 +1,7 @@
 package com.pirdad.guestlogixservice.domain;
 
+import java.util.Objects;
+
 public class Episode {
 
     private int id;
@@ -64,5 +66,21 @@ public class Episode {
 
     public void setCreated(String created) {
         this.created = created;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == this) return true;
+        if (!(o instanceof Episode)) {
+            return false;
+        }
+        Episode episode = (Episode) o;
+        return id == episode.id && Objects.equals(name, episode.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

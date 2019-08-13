@@ -1,5 +1,7 @@
 package com.pirdad.guestlogixservice.domain;
 
+import java.util.Objects;
+
 public class Character {
 
     private long id;
@@ -100,5 +102,21 @@ public class Character {
 
     public void setCreated(String created) {
         this.created = created;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (o == this) return true;
+        if (!(o instanceof Character)) {
+            return false;
+        }
+        Character character = (Character) o;
+        return id == character.id && Objects.equals(name, character.name);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name);
     }
 }

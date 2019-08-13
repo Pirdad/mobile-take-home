@@ -1,0 +1,262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintDimensionRatio="H,1:1"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:srcCompat="@mipmap/ic_launcher_round" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:paddingTop="@dimen/StandardMediumMargin"
+            app:layout_constraintBottom_toBottomOf="@+id/image"
+            app:layout_constraintTop_toTopOf="@+id/name"
+            android:background="#85ffffff" />
+
+        <TextView
+            android:id="@+id/subHeading"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginLeft="@dimen/StandardMediumMargin"
+            android:layout_marginRight="@dimen/StandardMediumMargin"
+            android:layout_marginBottom="@dimen/StandardMediumMargin"
+            app:layout_constraintBottom_toBottomOf="@id/image"
+            app:layout_constraintLeft_toLeftOf="@+id/image"
+            app:layout_constraintRight_toRightOf="@id/image"
+            tools:text="Human from Earth" />
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/StandardSmallMargin"
+            android:layout_marginLeft="@dimen/StandardMediumMargin"
+            android:layout_marginRight="@dimen/StandardMediumMargin"
+            android:paddingTop="20dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Display1"
+            app:layout_constraintBottom_toTopOf="@id/subHeading"
+            app:layout_constraintLeft_toLeftOf="@+id/image"
+            app:layout_constraintRight_toRightOf="@id/image"
+            tools:text="Character" />
+
+
+
+
+        <TextView
+            android:id="@+id/labelStatus"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Status"
+            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginTop="@dimen/StandardMediumMargin"
+            android:layout_marginLeft="@dimen/StandardMediumMargin"
+            app:layout_constraintTop_toBottomOf="@id/image"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/status"
+            />
+
+        <TextView
+            android:id="@+id/status"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="-"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:gravity="right"
+            android:layout_marginRight="@dimen/StandardMediumMargin"
+            app:layout_constraintTop_toTopOf="@+id/labelStatus"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/labelStatus"/>
+
+        <View
+            android:id="@+id/statusDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/DetailDividerColor"
+            android:layout_marginTop="@dimen/StandardSmallMargin"
+            app:layout_constraintTop_toBottomOf="@+id/labelStatus"
+            app:layout_constraintLeft_toLeftOf="@+id/labelStatus"
+            app:layout_constraintRight_toRightOf="@id/status"/>
+
+
+
+
+        <TextView
+            android:id="@+id/labelGender"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Gender"
+            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginTop="@dimen/StandardMediumMargin"
+            android:layout_marginLeft="@dimen/StandardMediumMargin"
+            app:layout_constraintTop_toBottomOf="@id/statusDivider"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/gender"
+            />
+
+        <TextView
+            android:id="@+id/gender"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="-"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:gravity="right"
+            android:layout_marginRight="@dimen/StandardMediumMargin"
+            app:layout_constraintTop_toTopOf="@+id/labelGender"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/labelGender"/>
+
+        <View
+            android:id="@+id/genderDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/DetailDividerColor"
+            android:layout_marginTop="@dimen/StandardSmallMargin"
+            app:layout_constraintTop_toBottomOf="@+id/labelGender"
+            app:layout_constraintLeft_toLeftOf="@+id/labelGender"
+            app:layout_constraintRight_toRightOf="@id/gender"/>
+
+
+
+
+        <TextView
+            android:id="@+id/labelSpecies"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Species"
+            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginTop="@dimen/StandardMediumMargin"
+            android:layout_marginLeft="@dimen/StandardMediumMargin"
+            app:layout_constraintTop_toBottomOf="@id/genderDivider"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/species"
+            />
+
+        <TextView
+            android:id="@+id/species"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="-"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:gravity="right"
+            android:layout_marginRight="@dimen/StandardMediumMargin"
+            app:layout_constraintTop_toTopOf="@+id/labelSpecies"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/labelSpecies"/>
+
+        <View
+            android:id="@+id/speciesDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/DetailDividerColor"
+            android:layout_marginTop="@dimen/StandardSmallMargin"
+            app:layout_constraintTop_toBottomOf="@+id/labelSpecies"
+            app:layout_constraintLeft_toLeftOf="@+id/labelSpecies"
+            app:layout_constraintRight_toRightOf="@id/species"/>
+
+
+
+
+        <TextView
+            android:id="@+id/labelOrigin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Origin"
+            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginTop="@dimen/StandardMediumMargin"
+            android:layout_marginLeft="@dimen/StandardMediumMargin"
+            app:layout_constraintTop_toBottomOf="@id/speciesDivider"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/origin"
+            />
+
+        <TextView
+            android:id="@+id/origin"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="-"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:gravity="right"
+            android:layout_marginRight="@dimen/StandardMediumMargin"
+            app:layout_constraintTop_toTopOf="@+id/labelOrigin"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/labelOrigin"/>
+
+        <View
+            android:id="@+id/originDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/DetailDividerColor"
+            android:layout_marginTop="@dimen/StandardSmallMargin"
+            app:layout_constraintTop_toBottomOf="@+id/labelOrigin"
+            app:layout_constraintLeft_toLeftOf="@+id/labelOrigin"
+            app:layout_constraintRight_toRightOf="@id/origin"/>
+
+
+
+
+        <TextView
+            android:id="@+id/labelLocation"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Location"
+            android:textStyle="bold"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:layout_marginTop="@dimen/StandardMediumMargin"
+            android:layout_marginLeft="@dimen/StandardMediumMargin"
+            app:layout_constraintTop_toBottomOf="@id/originDivider"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@+id/location"
+            />
+
+        <TextView
+            android:id="@+id/location"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="-"
+            android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+            android:gravity="right"
+            android:layout_marginRight="@dimen/StandardMediumMargin"
+            app:layout_constraintTop_toTopOf="@+id/labelLocation"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintLeft_toRightOf="@+id/labelLocation"/>
+
+        <View
+            android:id="@+id/locationDivider"
+            android:layout_width="0dp"
+            android:layout_height="1dp"
+            android:background="@color/DetailDividerColor"
+            android:layout_marginTop="@dimen/StandardSmallMargin"
+            app:layout_constraintTop_toBottomOf="@+id/labelLocation"
+            app:layout_constraintLeft_toLeftOf="@+id/labelLocation"
+            app:layout_constraintRight_toRightOf="@id/location"/>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            app:layout_constraintTop_toBottomOf="@id/locationDivider"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+</ScrollView>

@@ -1,5 +1,6 @@
 package com.pirdad.guestlogixtest.views;
 
+import com.pirdad.guestlogixservice.domain.Character;
 import com.pirdad.guestlogixtest.R;
 import android.app.Activity;
 import android.os.Bundle;
@@ -12,14 +13,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.pirdad.guestlogixtest.TakeHomeTestApplication;
 import com.pirdad.guestlogixtest.character.CharacterView;
 import com.pirdad.guestlogixtest.character.CharactersListPresenter;
 import com.pirdad.guestlogixtest.character.CharactersListView;
 import com.pirdad.guestlogixtest.helpers.ImageLoader;
 import com.pirdad.guestlogixtest.helpers.ListSpacingDecoration;
+import com.pirdad.guestlogixtest.navigation.CharacterDetailNavigationHandler;
 
-public class CharactersListActivity extends Activity implements CharactersListView {
+public class CharactersListActivity extends BaseActivity implements CharactersListView {
 
     public static final String KEY_TITLE = "TITLE";
     public static final String KEY_CHARACTER_IDS = "CHARACTER_IDS";
@@ -40,6 +44,8 @@ public class CharactersListActivity extends Activity implements CharactersListVi
     private void init() {
         presenter = new CharactersListPresenter();
         presenter.setView(this);
+        presenter.setRepository(getRepositoryProvider().getRepository(Character.class));
+        presenter.setCharacterToDetailNavigationHandler(new CharacterDetailNavigationHandler(this));
         presenter.setCharacterIds(loadCharacterIds());
         presenter.setTitle(loadTitle());
 
@@ -87,6 +93,11 @@ public class CharactersListActivity extends Activity implements CharactersListVi
                 }
             }
         });
+    }
+
+    @Override
+    public void showSoftError(String message) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     private class Adapter extends RecyclerView.Adapter<CharacterVH> {
@@ -148,6 +159,26 @@ public class CharactersListActivity extends Activity implements CharactersListVi
             }
             this.detail.setText(currText);
         }
+
+        @Override
+        public void setSpecies(String species) { }
+
+        @Override
+        public void setType(String type) {}
+
+        @Override
+        public void setOrigin(String origin) {}
+
+        @Override
+        public void setLocation(String origin) {}
+
+        @Override
+        public void showSoftError(String message) {
+            CharactersListActivity.this.showSoftError(message);
+        }
+
+        @Override
+        public void dismiss() { }
 
         @Override
         public void onClick(View v) {

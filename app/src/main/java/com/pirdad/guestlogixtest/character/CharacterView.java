@@ -9,4 +9,16 @@ public interface CharacterView {
     void setStatus(String status);
 
     void setGender(String gender);
+
+    void setSpecies(String species);
+
+    void setType(String type);
+
+    void setOrigin(String origin);
+
+    void setLocation(String origin);
+
+    void showSoftError(String message);
+
+    void dismiss();
 }

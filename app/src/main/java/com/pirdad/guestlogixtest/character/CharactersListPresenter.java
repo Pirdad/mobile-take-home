@@ -2,6 +2,7 @@ package com.pirdad.guestlogixtest.character;
 
 import com.pirdad.guestlogixservice.CharactersRequest;
 import com.pirdad.guestlogixservice.domain.Character;
+import com.pirdad.guestlogixtest.Repository;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -14,6 +15,7 @@ public class CharactersListPresenter {
     // navigation
     private CharacterToDetailNavigation navigateToDetail;
     // model
+    private Repository<Character> repository;
     private final List<Character> characters = new ArrayList<>();
 
     private String title;
@@ -22,6 +24,10 @@ public class CharactersListPresenter {
 
     public void setView(CharactersListView view) {
         this.view = view;
+    }
+
+    public void setRepository(Repository<Character> repository) {
+        this.repository = repository;
     }
 
     public void setCharacterToDetailNavigationHandler(CharacterToDetailNavigation characterToDetailNavigation) {
@@ -37,6 +43,9 @@ public class CharactersListPresenter {
     }
 
     public void onLoad() {
+        if (repository == null) {
+            throw new IllegalStateException("Repository must be set for CharactersListPresenter.");
+        }
         if (isLoading) {
             return;
         }
@@ -49,14 +58,15 @@ public class CharactersListPresenter {
         public void run() {
             try {
                 List<Character> characters = new CharactersRequest(characterIds).execute();
-                synchronized (CharactersListPresenter.this.characters) {
-                    CharactersListPresenter.this.characters.clear();
-                    CharactersListPresenter.this.characters.addAll(characters);
-                    if (view != null) {
-                        view.onDataLoaded();
-                    }
-                    isLoading = false;
+                for (Character character : characters) {
+                    repository.add(character);
                 }
+                CharactersListPresenter.this.characters.clear();
+                CharactersListPresenter.this.characters.addAll(repository.getAll());
+                if (view != null) {
+                    view.onDataLoaded();
+                }
+                isLoading = false;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -84,6 +94,14 @@ public class CharactersListPresenter {
     }
 
     public void onCharacterClicked(int index) {
-
+        if (navigateToDetail == null) {
+            return;
+        }
+        if (index < 0 || index >= characters.size()) {
+            view.showSoftError("Can't show character detail at the moment. Please try again later.");
+            return;
+        }
+        navigateToDetail.setCharacterId(characters.get(index).getId());
+        navigateToDetail.execute();
     }
 }
