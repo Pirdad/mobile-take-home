@@ -4,7 +4,7 @@ import java.util.Objects;
 
 public class Episode {
 
-    private int id;
+    private long id;
     private String name;
     private String airDate;
     private String episode;
@@ -12,11 +12,11 @@ public class Episode {
     private String url;
     private String created;
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -70,7 +70,6 @@ public class Episode {
 
     @Override
     public boolean equals(Object o) {
-
         if (o == this) return true;
         if (!(o instanceof Episode)) {
             return false;

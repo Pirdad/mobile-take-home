@@ -1,6 +1,6 @@
 package com.pirdad.guestlogixtest;
 
-import java.util.List;
+import java.util.Collection;
 
 public interface Repository<O> {
 
@@ -12,7 +12,7 @@ public interface Repository<O> {
 
     void delete(long id);
 
-    List<O> getAll();
+    Collection<O> getAll();
 
     O get(long id);
 }

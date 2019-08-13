@@ -4,6 +4,7 @@ import com.pirdad.guestlogixservice.domain.Character;
 import com.pirdad.guestlogixtest.Repository;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class DefaultCharacterRepository implements Repository<Character> {
@@ -43,7 +44,7 @@ public class DefaultCharacterRepository implements Repository<Character> {
     }
 
     @Override
-    public List<Character> getAll() {
+    public Collection<Character> getAll() {
         // todo: load from server
         return characters;
     }

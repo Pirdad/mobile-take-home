@@ -1,5 +1,6 @@
 package com.pirdad.guestlogixtest.views;
 
+import com.pirdad.guestlogixservice.domain.Episode;
 import com.pirdad.guestlogixtest.R;
 
 import android.app.Activity;
@@ -21,10 +22,11 @@ import com.pirdad.guestlogixtest.helpers.ListSpacingDecoration;
 import com.pirdad.guestlogixtest.helpers.PaginationScrollListener;
 import com.pirdad.guestlogixtest.navigation.EpisodeCharactersNavigationHandler;
 
-public class EpisodesListActivity extends Activity implements EpisodesListView {
+public class EpisodesListActivity extends BaseActivity implements EpisodesListView {
 
     private EpisodesListPresenter presenter;
     private RecyclerView recycler;
+    private View loader;
     private Adapter adapter;
     private LinearLayoutManager layoutManager = new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false);
 
@@ -38,6 +40,7 @@ public class EpisodesListActivity extends Activity implements EpisodesListView {
     private void init() {
         presenter = new EpisodesListPresenter();
         presenter.setView(this);
+        presenter.setRepository(getRepositoryProvider().getRepository(Episode.class));
         presenter.setNavigationToCharacters(new EpisodeCharactersNavigationHandler(this));
 
         adapter = new Adapter();
@@ -47,6 +50,8 @@ public class EpisodesListActivity extends Activity implements EpisodesListView {
         recycler.addItemDecoration(new ListSpacingDecoration(this, R.dimen.StandardMediumMargin));
         recycler.setAdapter(adapter);
         recycler.addOnScrollListener(paginationScrollListener);
+
+        loader = findViewById(R.id.loader);
     }
 
     @Override
@@ -78,8 +83,33 @@ public class EpisodesListActivity extends Activity implements EpisodesListView {
     }
 
     @Override
-    public void showSoftError(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+    public void showSoftError(final String message) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(EpisodesListActivity.this, message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void showLoading() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                loader.setVisibility(View.VISIBLE);
+            }
+        });
+    }
+
+    @Override
+    public void dismissLoading() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                loader.setVisibility(View.GONE);
+            }
+        });
     }
 
     private PaginationScrollListener paginationScrollListener = new PaginationScrollListener(layoutManager) {

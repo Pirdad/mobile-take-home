@@ -22,13 +22,9 @@ public abstract class GetRequest<T> {
         URL url = new URL(this.url);
         System.out.println("url: " + url.toString());
         HttpURLConnection con = (HttpURLConnection) url.openConnection();
-
-        // optional default is GET
         con.setRequestMethod("GET");
-
-        int responseCode = con.getResponseCode();
-        //System.out.println("\nSending 'GET' request to URL : " + url);
-        //System.out.println("Response Code : " + responseCode);
+        con.setConnectTimeout(15000);
+        con.setReadTimeout(30000);
 
         BufferedReader in = new BufferedReader(
                 new InputStreamReader(con.getInputStream()));
